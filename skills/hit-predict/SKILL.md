@@ -1,6 +1,6 @@
 ---
 name: hit-predict
-description: 给最终稿写一份 immutable 盲预测日志。这是 hit-lab 整个校准循环的核心动作——预测段一旦写完不可改，由 hook 强制。**自动检测**：如目标文件已有 `## 预测` / `## 预测 v1` 段（被 hit-shoot 调用走 v2 模式），改成 append `## 预测 v2` 而非覆盖。**打分通过 Task tool 委派给 `hit-score-blind` sub-agent**（context-isolated channel B），主 Claude review 后落盘。触发词："启动预测"/"start prediction"/"给这稿子打分并预测"/"写预测日志"。
+description: 给最终稿写一份 immutable 盲预测日志——hit-lab 校准循环的核心动作，预测段写完即不可改（hook 强制）。目标文件已有 `## 预测`/`## 预测 v1` 段时（hit-shoot 调用场景）自动走 v2 模式 append 而非覆盖。打分必须经 Task tool 委派 `hit-score-blind` sub-agent（context-isolated channel B），主 Claude review 后落盘。触发词："启动预测"/"start prediction"/"给这稿子打分并预测"/"写预测日志"。
 argument-hint: <script-path> [— mode: v1|v2] [— prediction-file: <path>] [— skip-blind]
 allowed-tools: Bash(*), Read, Write, Edit, Glob, Task
 ---

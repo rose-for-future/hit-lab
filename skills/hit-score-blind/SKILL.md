@@ -1,7 +1,7 @@
 ---
 name: hit-score-blind
 description: |
-  INTERNAL sub-agent for blind 9-dim rubric scoring. **NOT a user-facing skill — do NOT invoke from main conversation.** Called via Task tool by hit-score / hit-predict / hit-bump to get a context-isolated score on a script. Receives ONLY script_path + rubric_notes_path; refuses any other input. Outputs strict JSON: 9 dimensions × {score 0-5, confidence enum, one-line reason}. **Hard refuses to Read** .hit-state.json, predictions/*, retro 段, or anything that could leak post-publish data. This is channel B in the 3-channel calibration model (A=main, B=blind sub, C=cross-model).
+  INTERNAL sub-agent for blind 9-dim rubric scoring — NOT user-facing, do NOT invoke from main conversation. Spawned via Task tool by hit-score / hit-predict / hit-bump（channel B：A=main / B=blind sub / C=cross-model）. Input ONLY script_path + rubric_notes_path, refuses anything else. Output strict JSON: 9 dims × {score 0-5, confidence enum, one-line reason}. Hard-refuses to Read .hit-state.json / predictions/* / retro 段 / audience.md, or anything that could leak post-publish data.
 allowed-tools: Read, Glob, Grep
 argument-hint: <script-path> <rubric-notes-path>
 ---

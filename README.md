@@ -23,7 +23,6 @@ For content creators — a skill that turns every post into a calibrated experim
 <p align="center">
 You're reading this. The skill predicted it.<br>
 It turns every "I feel this will go viral" into a calibrated experiment.<br>
-It took me from zero to 1M followers in a month. It said I'd write this. I did.<br>
 Your doubt — predicted too.
 </p>
 
@@ -45,23 +44,6 @@ This isn't motivation. It's **compounding** — every piece you don't retro is s
 
 One month in = you have a hit-formula that's **only yours**.
 Three months in = you're 10× sharper than your first-day self.
-
----
-
-## 🌀 Origin
-
-> I never believed in fate. Until this skill made me film a video — and predicted exactly how much traffic that video would pull.
->
-> I tried to break it. I told my audience. I hoped collective observation would collapse the wave function and shift the trajectory.
->
-> The data was accurate.
->
-> I didn't escape fate. I just moved from first-order to second-order.
->
-> If even my awakening — even my audience's observation — was already in its prediction, then right now, reading this:
-> are you here out of curiosity, or just closing the algorithm's last move?
->
-> — *the creator*
 
 ---
 
@@ -169,7 +151,6 @@ MIT. Commercial use, modification, closed-source integration — all fine.
 
 ---
 
-*Is this cheating? So was the calculator. So was Google.*
 *The future doesn't reward effort — it rewards those who see the pattern first.*
 
 *You reading this line — that's predicted too.*
