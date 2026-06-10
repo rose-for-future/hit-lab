@@ -11,9 +11,11 @@ allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill, mcp__llm-chat__cha
 >
 > **方法论**（5 阶段闭环）：任何能被量化的内容形态都适用——视频 / 文章 / 播客 / Newsletter / 短文 thread。
 >
-> **当前内置 rubric**：观点类视频（评论 / 时评 / 论说 / 议题讨论 / 个人观点表达），7 个维度由参考博主 25+ 已发样本拟合而来。如果你做其他形态，需要：
-> - 自己写一份 rubric（参照 [starter-rubrics/opinion-video-zero.md](starter-rubrics/opinion-video-zero.md) 的格式）
-> - 或等内置扩展（长文 / 短文 / 播客 starter 在批次 3 路线图）
+> **当前内置 rubric ×2**：
+> - **观点类视频**（评论 / 时评 / 论说 / 个人观点表达）——7 个维度由参考博主 25+ 已发样本拟合
+> - **教程 / 清单类图文**（工具教学 / Builder 实操 / 方法论清单）——维度由一个真实教程账号的校准复盘反推（观点 rubric 在该形态上实测出现 9 倍 rank inversion，因此单列）
+>
+> 其他形态：自己写一份 rubric（参照 [starter-rubrics/](starter-rubrics/) 任一 zero 版格式），或等内置扩展（长文 / 短文 / 播客 starter 在批次 3 路线图）
 >
 > 默认假设：**用户是从零开始的新人**（一条视频都没发过）——cold-start 期的预测会**简化**，只要 7 维打分 + 一句话 bet，不强求 bucket 数字（避免 false precision）。已有 5+ 篇数据的老手走 calibration 模式解锁完整 7 组件预测。
 
@@ -139,7 +141,7 @@ hit-lab/
 │   ├── hit-score/SKILL.md           # ✅ 单稿打分（不写文件）
 │   ├── hit-predict/SKILL.md         # ✅ 盲预测 + immutable 日志
 │   ├── hit-shoot/SKILL.md           # ✅ 登记拍摄（buffer +1）
-│   ├── hit-publish/SKILL.md         # ✅ 发布元数据登记（buffer -1）
+│   ├── hit-publish/SKILL.md         # ✅ 发布元数据登记（buffer -1；含 --backfill 补登记 / --preflight 发布前检查）
 │   ├── hit-retro/SKILL.md           # ✅ 数据回收 + 复盘
 │   ├── hit-persona/SKILL.md         # ✅ 受众画像派生（从复盘评论聚类）
 │   ├── hit-bump/SKILL.md            # ✅ rubric 升级（含跨模型审）
@@ -163,6 +165,7 @@ hit-lab/
 ├── starter-rubrics/                   # 各内容形态的先验 rubric
 │   ├── opinion-video.md               # ✅ 观点视频（中文，已校准 25+ 样本）
 │   ├── opinion-video-zero.md          # ✅ v0 等权占位（cold-start）
+│   ├── tutorial-list-zero.md          # ✅ 教程 / 清单类图文 v0（cold-start）
 │   ├── long-form-essay.md             # ⬜ 公众号 / Substack
 │   └── short-form-text.md             # ⬜ X thread / 微博长文
 ├── templates/                         # skill 写进用户 repo 的文件骨架
@@ -186,9 +189,11 @@ hit-lab/
 │   └── log-event.sh                   # ✅ meta-logging 脚本
 ├── tools/                             # 独立 CLI 脚本
 │   ├── score-curve.py                 # ⬜ 预测精度收敛曲线
+│   ├── finalize_package.py            # ✅ 图文定稿 → 发布包（正文 + 图片 + manifest）
 │   ├── md-to-sqlite.py                # ⬜ markdown → content.db 升级（批次 3）
 │   └── validate-bump.py               # ⬜ 校准池全量重打（批次 3）
 ├── adapters/                          # 数据源适配
+│   ├── HOWTO.md                       # ✅ 写新 adapter 的最小契约 + 实测经验法则
 │   ├── perf-data/                     # 复盘数据源（含 douyin-session）
 │   ├── candidate-pool/                # 候选池数据源
 │   ├── trend-sources/                 # 热点抓取源

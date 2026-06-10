@@ -8,6 +8,36 @@ All notable changes to hit-lab will be documented here.
 
 ## [Unreleased]
 
+### Added — tutorial-list starter rubric（第二个内置内容形态）
+
+**动机**：一个真实教程类账号的首批校准复盘（已脱敏）实测出 rank inversion——观点 rubric 给账号史上最佳的"N 步清单"文打了全系列最低分，实绩方向打反 9 倍。教程内容的传播由"可执行性 → 收藏率 → 算法持续推"驱动，观点 rubric 的 7 维一个都不量这件事。
+
+- 新增 `starter-rubrics/tutorial-list-zero.md`：HP / AC（可执行性）/ CV（收藏价值）/ VS（框架图承载）/ CL / AB / TR 七维等权 v0
+- `hit-init` Q1 选 e（教程/Builder）→ 直接匹配该 rubric，`rubric_form_mismatch=false`
+
+### Added — hit-publish 两个子模式
+
+- **`--backfill` 补登记**：登记装 hit-lab 之前已发布、无预测的历史内容。生成 retro-only 登记文件（预测段仅免责声明），进 `pending_retros`。新增 Refusal：禁止事后补写"预测"
+- **`--preflight` 发布前检查**：标题 lint（markdown 残留 / 字数）、正文字数、图片数、图文一致。动机：实测有标题带 `# ` 上线导致全账号最差实绩的案例
+
+### Added — 周边
+
+- `adapters/HOWTO.md`：写新 adapter 的最小契约 + 经验法则（被动优先 / 不要自动化导航风控页 / API≠全量）
+- `tools/finalize_package.py`：图文定稿 → 发布包（正文 + 图片 + manifest），来自实际使用项目上游化
+- `adapters/perf-data/xhs-explore`：补"实测翻车记录"——CDP 主动导航 / headless 均触发 401 风控踢出；正确姿势 = 真实窗口 + 被动 Network 监听 + 页面内 same-origin fetch；`posted?tab=0` 接口只回子集，DOM 才是全量
+
+### Fixed — 盲打分系统性误报（false-positive non_blind_warning）
+
+**问题**：starter rubric 实例化成用户的 `rubric_notes.md`（channel B 白名单文件）时，自带的 bucket 教学示例数字（"5w 是底部"/"480 播放"）必然命中兜底自检 grep——实测每次打分都触发 `non_blind_warning`、confidence 永久压 medium，warning 失去信号价值。
+
+**修复**：starter rubrics / rubric_notes 模板中所有教学示例行逐行标 `<!-- hl-ex -->`；`hit-score-blind` 自检 grep 排除标记行。用户手写的实绩（无标记）照常触发。
+
+### Changed
+
+- `hit-score-blind`：明确禁止 sub-agent 在 JSON 之外"顺手核对" composite（实测协议漂移）
+- 清理误入仓库的 `__pycache__/`
+
+
 ### Added — 受众画像 persona（hit-persona skill + audience.md）
 
 **动机**：用户选题 / 写稿时缺一个清晰的"谁在看"的镜子。新增受众画像功能——从复盘评论数据聚类出账号真实受众。

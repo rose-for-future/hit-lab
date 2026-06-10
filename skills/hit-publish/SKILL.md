@@ -1,6 +1,6 @@
 ---
 name: hit-publish
-description: 登记一篇内容已发布，把 URL/平台 ID/发布时间写入对应预测文件 header 和 state file。这是一个轻量动作——只更新元数据，**不动预测段任何字符**。触发词："已发布"/"I shipped"/"发布链接是 X"/"刚发完 [url]"/"publish registered"。
+description: 登记一篇内容已发布，把 URL/平台 ID/发布时间写入对应预测文件 header 和 state file。这是一个轻量动作——只更新元数据，**不动预测段任何字符**。另含两个子模式：--backfill 补登记历史已发内容（无预测）、--preflight 发布前检查（标题 lint / 字数 / 图数）。触发词："已发布"/"I shipped"/"发布链接是 X"/"刚发完 [url]"/"补登记"/"backfill"/"发布前检查"/"preflight"。
 argument-hint: <prediction-file-or-url> [— platform: youtube|bilibili|douyin|...]
 allowed-tools: Bash(*), Read, Edit, Glob
 ---
@@ -148,6 +148,36 @@ allowed-tools: Bash(*), Read, Edit, Glob
 
 Buffer 颜色由 [shared-references/cadence-protocol.md](../../shared-references/cadence-protocol.md) 派生。如本次发布让 buffer 跌入红色（断更风险）→ 高亮警告"今天必须再拍 ≥1 条"。
 
+### 子模式 A：`--backfill` 补登记（已发布但从未写预测的历史内容）
+
+真实用户几乎都有"装 hit-lab 之前就发过的内容"。这些内容**没有预测文件**，但它们的实绩是宝贵的校准数据——不登记，retro 管道就永远空转。
+
+触发词："补登记"/"backfill"/"这几篇是装之前发的"。
+
+流程：
+1. 向用户收集：标题、发布时间、平台、URL（可后补）、原稿路径（如有）
+2. 为每篇创建 `predictions/<date>_<slug>.md`，固定结构：
+   - header：`status: published（补登记）` + 发布元数据 + `registered_at`
+   - `## 预测` 段只写一行免责声明：**"本篇发布前未做预测。不参与方向校准（无预测可对比）；复盘时的盲打分（channel B 天然盲于实绩）可作 rubric 校准的弱样本。"**
+   - 空 `## 复盘` 段
+3. 全部加入 `pending_retros`；按最新一篇更新 `last_published_at`
+4. **绝不伪造预测**——见 Refusals
+
+### 子模式 B：`--preflight` 发布前检查
+
+发布是不可逆动作，发出去的标题改不了。建议用户在平台编辑器里点"发布"**之前**说"发布前检查"。
+
+检查清单（规格从用户项目的 `platform_profiles.md` 读，没有则用平台默认）：
+
+| 检查 | 规则 | 已知翻车案例 |
+|---|---|---|
+| 标题 lint | 不含 markdown 残留（行首 `#`、`*`、反引号）；不超平台标题字数 | 实测有标题带 `# ` 上线导致全账号最差实绩的案例 |
+| 正文字数 | ≤ 平台上限（如小红书 1000 字） | |
+| 图片数量 | ≥ 平台最低要求（如小红书 ≥3） | |
+| 图文一致 | 配图编号与正文步骤数一致（清单类） | |
+
+输出 ✅/❌ 清单。有 ❌ → 列出修复建议，**不阻塞**（用户有权带病发布，但要知情）。
+
 ## Key Rules
 
 1. **不动预测段**。即使是修复笔误，也不允许在 publish 时改预测段
@@ -158,6 +188,7 @@ Buffer 颜色由 [shared-references/cadence-protocol.md](../../shared-references
 
 ## Refusals
 
+- 「补登记的时候顺便把预测也补写一份」 → **拒绝**。事后写的"预测"是带后视镜的伪数据，混入校准池会污染整个 rubric 进化。补登记文件的预测段只能是免责声明
 - 「我顺手把预测段也改一下」 → 拒绝。请走 `_redo.md` 路径
 - 「URL 我等会儿补，先把发布时间记上」 → 允许：URL 字段可后续追加；published_at + platform 必填
 - 「跳过 metadata 更新，直接清 in_progress_session」 → 拒绝。元数据是复盘时的关键上下文（特别是 platform 决定数据回收用哪个 adapter）

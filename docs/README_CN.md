@@ -116,6 +116,10 @@ bash install.sh
 
 5 个 yes/no 搞定 onboarding。**强烈建议导对标账号**——5-10 条样本 → 工具立刻有 anchor，不然前 5 篇预测精度 ±50%。
 
+内置两份 starter rubric：**观点视频** 和 **教程 / 清单类图文**（后者单列是因为实测：用观点 rubric 给教程内容打分出现 9 倍 rank inversion——驱动这个形态的是可执行性和收藏率，不是情感共鸣）。其他形态从二者之一起步，靠 `升级 rubric` 进化。
+
+装 hit-lab 之前就发过内容？说 `补登记`——历史内容会登记成只复盘记录（不伪造预测），校准管道从第一天就有真实数据，而不是空转。
+
 ---
 
 ## ⚡ 日常用法
@@ -124,7 +128,9 @@ bash install.sh
 打分这篇 scripts/<...>.md         → 评分
 启动预测 scripts/<...>.md         → 盲预测 + 决策日志
 拍了 scripts/<...>.md            → 建 video folder + buffer +1
+发布前检查                         → 标题残留 / 字数 / 图数 lint
 已发布 https://...                → buffer -1
+补登记                            → 登记装 hit-lab 前已发的历史内容（只复盘）
 复盘 videos/<...>/                → T+3d 数据回收 + 复盘
 状态 / 抓热点 / 找选题 / 升级 rubric / 找对标
 ```

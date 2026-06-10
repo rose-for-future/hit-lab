@@ -87,7 +87,7 @@ allowed-tools: Bash(*), Read, Write, Edit, Glob, WebFetch, Skill
 > b) **长文 essay**（公众号 / Substack / Medium）— 可借观点视频 rubric 起步，bump 时调权重
 > c) **短文 / thread**（X / 微博 / 即刻）— 同上
 > d) **播客 / 视频长内容**（YouTube 长片 / 播客）— 同上
-> e) **教程 / 工具教学 / Builder**（教别人怎么用 X 工具 / 怎么做 Y 项目）— 同上
+> e) **教程 / 工具教学 / Builder**（教别人怎么用 X 工具 / 怎么做 Y 项目）— 直接匹配内置 tutorial-list rubric
 > f) **其他**（游戏 / 美食 / 妆教 / 新闻 / 剧情）— 工作流通用，但 rubric 维度需要调
 >      （ER / SR / HP 这套对你形态可能不太预测，需要自己拆出适合的维度）
 > g) **混合**"
@@ -107,8 +107,8 @@ allowed-tools: Bash(*), Read, Write, Edit, Glob, WebFetch, Skill
 | g | `"mixed"` |
 
 `rubric_form_mismatch` 派生：
-- 选 a → `false`
-- 选 b/c/d/e/f/g → `true`，hit-status 持续提示"你的形态可能需要 bump 调权重"
+- 选 a / e → `false`（各有专属内置 starter rubric）
+- 选 b/c/d/f/g → `true`，hit-status 持续提示"你的形态可能需要 bump 调权重"
 - **不再有"严重不匹配"档**——所有形态都能跑工作流，只是有的 rubric 需要更激进的 bump
 
 **Q1.5: 典型时长**（仅 Q1=a/d/f 时问）
@@ -319,7 +319,13 @@ c) 不找 → state 标 `benchmark_status: none`，用通用 v0 起步
     只能含通用语言（公式 / 维度定义 / bucket 边界），不能含真实视频名 / 实绩。
     每次 bump 升级时的 Memo（含证据数据 + 派生证据）写到 rubric-memo.md（下一步创建）。"
    ```
-   - 复制 `hit-lab/starter-rubrics/<form>-zero.md`（cold-start）或 `<form>.md`（已有数据时仍可参考）
+   - 复制对应 starter（cold-start）：
+     | content_form | 复制的文件 |
+     |---|---|
+     | `opinion-video` | `starter-rubrics/opinion-video-zero.md` |
+     | `tutorial-builder` | `starter-rubrics/tutorial-list-zero.md` |
+     | 其他形态 | 二选一中更接近的（图文教学倾向 tutorial-list；表达观点倾向 opinion-video），`rubric_form_mismatch=true` |
+     已有数据的老手可参考 `starter-rubrics/<form>.md` 校准版（如存在）
 
 2.5. **`rubric-memo.md`**（**新**——配合 hit-score-blind 隔离协议）
    ```

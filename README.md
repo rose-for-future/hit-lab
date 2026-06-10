@@ -118,6 +118,10 @@ In your content project directory, open a skill-compatible agent and say:
 
 Five yes/no questions complete onboarding. **Strongly recommend importing a benchmark account** — 5–10 samples and the tool gets an anchor immediately. Without one, your first 5 predictions land at ±50% precision.
 
+Two built-in starter rubrics: **opinion video** and **tutorial / list-style posts** (the latter exists because we measured a 9× rank inversion when grading tutorial content with the opinion rubric — actionability and collect-rate, not emotion, drive that form). Other forms start from either and evolve via `bump rubric`.
+
+Already published before installing? Say `backfill` — past posts get registered as retro-only records (no fabricated predictions), so your calibration pipeline starts with real data instead of an empty queue.
+
 ---
 
 ## ⚡ Daily use
@@ -126,7 +130,9 @@ Five yes/no questions complete onboarding. **Strongly recommend importing a benc
 score this scripts/<...>.md       → grade only
 start prediction scripts/<...>.md → blind prediction + decision log
 shot scripts/<...>.md             → create video folder + buffer +1
+preflight                          → pre-publish lint: title artifacts / char limit / image count
 shipped https://...                → buffer -1
+backfill                           → register posts published before hit-lab (retro-only)
 retro videos/<...>/                → T+3d data + retrospective
 status / fetch trends / find topic / bump rubric / find benchmark
 ```
