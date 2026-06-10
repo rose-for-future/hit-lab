@@ -38,7 +38,7 @@
 > 删除下方所有示例 entry，从你的真实候选开始累计。
 > 示例展示的是「视频分析」项目当前 candidates pool 的真实样本（已脱敏）。
 
-### [tier1] "为你好"高密度家庭体系
+### 〔示例〕[tier1] "为你好"高密度家庭体系
 
 - **id**: e7c2f1a4d3b6
 - **source**: pool:manual
@@ -54,7 +54,7 @@
 
 ---
 
-### [tier1] 哈哈长度
+### 〔示例〕[tier1] 哈哈长度
 
 - **id**: 229f5798b1d8
 - **source**: pool:manual
@@ -70,7 +70,7 @@
 
 ---
 
-### [tier2] 弗洛伊德的性压抑哲学
+### 〔示例〕[tier2] 弗洛伊德的性压抑哲学
 
 - **id**: 8c4d92e1f0b3
 - **source**: trend:manual-paste
@@ -85,7 +85,7 @@
 
 ---
 
-### [skip] [示例 - 已跳过的候选]
+### 〔示例〕[skip] [示例 - 已跳过的候选]
 
 - **id**: a1b2c3d4e5f6
 - **source**: trend:hackernews
@@ -96,7 +96,7 @@
 
 ---
 
-### [done] [示例 - 已发布的候选]
+### 〔示例〕[done] [示例 - 已发布的候选]
 
 - **id**: ab61ed09f0a1
 - **source**: pool:manual

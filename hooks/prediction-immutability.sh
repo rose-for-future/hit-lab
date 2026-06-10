@@ -19,9 +19,10 @@
 #
 # Requirements: bash 3+, jq, diff. Mac default install has all of these.
 #
-# Exit codes:
+# Exit codes (Claude Code PreToolUse contract):
 #   0 = allow tool call to proceed
-#   1 = block tool call (Claude Code will surface stderr to the model)
+#   2 = BLOCK tool call (stderr is surfaced to the model)
+#   (exit 1 is a NON-blocking error in Claude Code -- the tool call would proceed; never use it to block)
 
 set -uo pipefail
 
@@ -130,7 +131,7 @@ What to do instead:
 
 See: shared-references/blind-prediction-protocol.md
 EOF
-    exit 1
+    exit 2
   fi
 
   rm -f "$pred_tmp"
@@ -150,7 +151,7 @@ The original prediction file must be preserved verbatim.
 
 See: shared-references/blind-prediction-protocol.md
 EOF
-  exit 1
+  exit 2
 fi
 
 exit 0

@@ -203,13 +203,27 @@ install_skills() {
       ln -s "$src" "$dst"
       echo "  ✓ symlinked: $s"
     else
-      cp -R "$src" "$dst"
-      if [[ "$s" == "hit-lab" ]]; then
-        rm -rf "$dst/.git"
-      fi
-      echo "  ✓ copied:    $s"
+      # copy mode: skills reference shared assets via relative paths
+      # (../../shared-references, templates/, starter-rubrics/, hooks/) —
+      # copying a skill dir alone breaks every one of those references.
+      # So copy mode = snapshot the WHOLE repo into .hit-lab-dist/ once,
+      # then symlink each skill into the frozen snapshot.
+      local rel="${src#"$SCRIPT_DIR"}"
+      local snap_src="$DIST_DIR${rel}"
+      ln -s "$snap_src" "$dst"
+      echo "  ✓ copied (via snapshot): $s"
     fi
   done
+}
+
+make_snapshot() {
+  local target_dir="$1"
+  DIST_DIR="$target_dir/.hit-lab-dist"
+  rm -rf "$DIST_DIR"
+  mkdir -p "$DIST_DIR"
+  ( cd "$SCRIPT_DIR" && tar --exclude .git --exclude '__pycache__' --exclude .claude -cf - . ) \
+    | ( cd "$DIST_DIR" && tar -xf - )
+  echo "  ✓ snapshot: $DIST_DIR (frozen copy of the repo)"
 }
 
 WARNED=0
@@ -231,10 +245,12 @@ if [[ $WARNED -eq 1 ]]; then
 fi
 
 if [[ "$TARGET_AGENT" == "claude" || "$TARGET_AGENT" == "all" ]]; then
+  if [[ "$MODE" == "copy" ]]; then make_snapshot "$HOME/.claude/skills"; fi
   install_skills "Claude Code" "$HOME/.claude/skills" "${CLAUDE_SKILLS[@]}"
 fi
 
 if [[ "$TARGET_AGENT" == "codex" || "$TARGET_AGENT" == "all" ]]; then
+  if [[ "$MODE" == "copy" ]]; then make_snapshot "$HOME/.codex/skills"; fi
   install_skills "Codex" "$HOME/.codex/skills" "${CODEX_SKILLS[@]}"
 fi
 
@@ -269,6 +285,6 @@ if [[ "$MODE" == "symlink" ]]; then
     echo "   To switch to frozen copy: bash install.sh --copy"
   fi
 else
-  echo "ℹ️  Mode: copy — frozen at install time. Re-run install.sh to update."
+  echo "ℹ️  Mode: copy — repo snapshot frozen at install time in skills/.hit-lab-dist/. Re-run install.sh to update."
 fi
 echo ""

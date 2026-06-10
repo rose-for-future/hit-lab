@@ -26,6 +26,17 @@ All notable changes to hit-lab will be documented here.
 - `tools/finalize_package.py`：图文定稿 → 发布包（正文 + 图片 + manifest），来自实际使用项目上游化
 - `adapters/perf-data/xhs-explore`：补"实测翻车记录"——CDP 主动导航 / headless 均触发 401 风控踢出；正确姿势 = 真实窗口 + 被动 Network 监听 + 页面内 same-origin fetch；`posted?tab=0` 接口只回子集，DOM 才是全量
 
+### Fixed — 首次端到端冒烟测试发现的 4 个 bug（2026-06-11）
+
+在沙箱 HOME + 临时项目里完整跑了 install → init（教程形态）→ 盲打分（真实 sub-agent）→ immutability hook（6 个 payload）→ session-start hook：
+
+1. **copy 模式安装是坏的**：子 skill 通过相对路径引用 `shared-references/` / `templates/` / `starter-rubrics/`，单独拷贝 skill 目录后全部悬空（hit-init 无法实例化任何模板）。修复：copy 模式改为"快照整个 repo 到 `skills/.hit-lab-dist/` + symlink 各 skill 进快照"——保留 frozen 语义，相对路径经物理解析全部可达。uninstall.sh 同步清理快照
+2. **immutability hook 实际拦不住（严重）**：拦截路径用 `exit 1`，而 Claude Code PreToolUse 契约里只有 `exit 2` 阻塞工具调用、`exit 1` 仅是非阻塞报错。修复后 6 个 payload 测试全过（改预测段/Write 覆盖→拦；改 header/追加复盘/新建/项目外→放行）
+3. **session-start 把 candidates 模板的章节标题当候选**：解析器抓任意 `^### `。修复：只匹配真实条目格式 `^### \[`
+4. **candidates 模板示例条目被当真实候选**：模板自带的示例 entry 与真实条目同格式。修复：示例统一加 `〔示例〕` 前缀，解析器天然跳过；空池正确显示"(空——说 '抓热点')"
+
+冒烟结论：install（修复后）/ init 实例化 / 盲打分（新 tutorial rubric 七维 + 零误报）/ 两个 hook 全部通过。
+
 ### Fixed — 盲打分系统性误报（false-positive non_blind_warning）
 
 **问题**：starter rubric 实例化成用户的 `rubric_notes.md`（channel B 白名单文件）时，自带的 bucket 教学示例数字（"5w 是底部"/"480 播放"）必然命中兜底自检 grep——实测每次打分都触发 `non_blind_warning`、confidence 永久压 medium，warning 失去信号价值。

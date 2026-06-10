@@ -88,6 +88,13 @@ remove_skills() {
       echo "  · not found:         $s (skipped)"
     fi
   done
+
+  # copy 模式安装时的仓库快照
+  if [[ -d "$target_dir/.hit-lab-dist" ]]; then
+    rm -rf "$target_dir/.hit-lab-dist"
+    echo "  ✓ removed snapshot:  .hit-lab-dist/"
+    REMOVED=$((REMOVED + 1))
+  fi
 }
 
 if [[ "$TARGET_AGENT" == "claude" || "$TARGET_AGENT" == "all" ]]; then

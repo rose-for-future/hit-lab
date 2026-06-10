@@ -156,8 +156,9 @@ fi
 candidates_file="$PROJECT_DIR/candidates.md"
 top_candidates=""
 if [[ -f "$candidates_file" ]]; then
-  # Extract first 3 H3 titles, format compactly
-  top_candidates=$(grep -E '^### ' "$candidates_file" 2>/dev/null \
+  # Extract first 3 candidate entries. Real entries are '### [P0] title' —
+  # require the [tier] bracket so template scaffolding headings don't parse as candidates
+  top_candidates=$(grep -E '^### \[' "$candidates_file" 2>/dev/null \
     | head -3 \
     | sed -E 's/^### \[[^]]+\] *//' \
     | tr '\n' '/' \
