@@ -8,6 +8,16 @@ All notable changes to hit-lab will be documented here.
 
 ## [Unreleased]
 
+### Added — 选题主线选择（discovery_strategy）+ community-questions 源
+
+**动机**：有的账号核心打法是"搜真实用户问题 → 我来给解决方案"（教程 / 工具号），而不是追热点话题。让用户在 onboarding 时就能选主线，而不是被默认的热点逻辑绑定。
+
+- **onboarding 新增 Q1.7「选题主线」**：热点为主（`trend-first`）/ 搜问题为主（`question-first`）/ 都要（`balanced`，默认）。写入新 state 字段 `discovery_strategy`
+- **新 adapter `community-questions`**：WebSearch + WebFetch 抓 V2EX/知乎/Reddit/HN 的**真实用户提问**（区别于 aihot/trendradar 抓的话题热度），把"问题"反转成"选题"写入候选池。**零登录态、零凭据、零账号风险**——纯公开网页检索，不碰任何账号登录态（那才是会封号的路径）。emit `trend:community-questions`（复用现有 dedup 命名空间）
+- **question-first 是一等公民**：选它 → community-questions 进默认 `enabled_trend_sources`；候选池空时，hit-trends / hit-recommend 的引导指向"挖问题"而非"抓热点"。新增触发词 `挖问题`
+- **非破坏性**：`discovery_strategy` 是附加字段，缺省即 `balanced`（= 今日行为），老用户无此字段不报错，读取走 `.get(...,"balanced")`。**不 bump schema**——按 migration-protocol 的附加字段豁免，避免给每个老用户每次开会话刷 schema 不一致警告
+- **已知边界（诚实标注）**：`hit-seed` 当前不读 `enabled_trend_sources`（按 content_form 硬路由），所以 community-questions 目前**只经 hit-trends 流入**，不影响 hit-seed 种子选题。data-source-routing.md 里早先"自动启用"的说法是未实现的 aspirational 文案，已纠正
+
 ### Added — tutorial-list starter rubric（第二个内置内容形态）
 
 **动机**：一个真实教程类账号的首批校准复盘（已脱敏）实测出 rank inversion——观点 rubric 给账号史上最佳的"N 步清单"文打了全系列最低分，实绩方向打反 9 倍。教程内容的传播由"可执行性 → 收藏率 → 算法持续推"驱动，观点 rubric 的 7 维一个都不量这件事。

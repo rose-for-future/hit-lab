@@ -51,13 +51,17 @@
 
 ## 数据源路由（按 content_form）
 
-[adapters/trend-sources/](../adapters/trend-sources/) 目前有两个一等公民 + 一个保底：
+[adapters/trend-sources/](../adapters/trend-sources/) 的源分两类——**话题热度**（aihot/trendradar）和**用户提问**（community-questions），外加一个保底：
 
 | Adapter | 适合的 content_form |
 |---|---|
 | [`aihot`](../adapters/trend-sources/aihot.md) | `tutorial-builder` / AI 行业评论 / AI 教程 / AI 产品测评 |
 | [`trendradar-mcp`](../adapters/trend-sources/trendradar-mcp.md) | `opinion-video` / `long-essay` / `short-text` / `podcast` / `other`（生活/职场/文化） |
+| [`community-questions`](../adapters/trend-sources/community-questions.md) | **正交于 content_form**——抓真实用户提问而非话题热度。`question-first` 用户的默认源；零登录态零账号风险（纯 WebSearch/WebFetch） |
 | `manual-paste` | 永远的 fallback——用户粘 URL/标题列表 |
+
+> **`community-questions` 的启用走 `discovery_strategy`，不走下面的 content_form 矩阵**：onboarding Q1.7 选"搜问题为主"（`question-first`）→ 该 adapter 进默认 `enabled_trend_sources`；其他主线的用户随时可手动加它或说"挖问题"临时跑。它与"话题热度"源互补，不是替代。
+> ⚠️ 注意：`hit-seed` 当前**不读** `enabled_trend_sources`（按 content_form 硬路由 aihot/trendradar）——所以 community-questions 目前**只经 hit-trends 流入候选池**，不影响 hit-seed 的种子选题。本文件早先"不需要改 hit-seed 内部逻辑——自动启用"的说法是 aspirational，代码未实现，勿据此假设 hit-seed 会自动用新源。
 
 ### content_form → 主调 + 备调矩阵
 

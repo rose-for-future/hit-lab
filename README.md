@@ -122,6 +122,8 @@ Two built-in starter rubrics: **opinion video** and **tutorial / list-style post
 
 Already published before installing? Say `backfill` — past posts get registered as retro-only records (no fabricated predictions), so your calibration pipeline starts with real data instead of an empty queue.
 
+Onboarding also asks your **discovery strategy**: trend-first (chase hot topics) vs question-first (mine real user questions and answer them — ideal for tutorial / tool accounts) vs balanced. Question-first wires in a zero-credential `community-questions` source (WebSearch over V2EX/知乎/Reddit, no login = no ban risk) and points empty-pool nudges at "挖问题" instead of "抓热点". Both source types stay available either way — it only sets the default + emphasis.
+
 ---
 
 ## ⚡ Daily use
@@ -134,6 +136,7 @@ preflight                          → pre-publish lint: title artifacts / char 
 shipped https://...                → buffer -1
 backfill                           → register posts published before hit-lab (retro-only)
 retro videos/<...>/                → T+3d data + retrospective
+mine questions                     → fetch real user questions (zero account risk)
 status / fetch trends / find topic / bump rubric / find benchmark
 ```
 

@@ -26,6 +26,7 @@
   "typical_duration_seconds": 240,
   "target_publish_cadence_days": 2,
   "rubric_form_mismatch": false,
+  "discovery_strategy": "balanced",
   "benchmark_status": "none",
   "benchmark_name": null,
   "benchmark_sample_count": 0,
@@ -119,6 +120,7 @@
 | `typical_duration_seconds` | int | 用户视频典型时长。决定 hit-seed 写 draft 的字数 + hit-predict 锚点优先同时长 | hit-init | hit-seed / hit-predict |
 | `target_publish_cadence_days` | int / null | 用户目标发布频率（1=日更 / 2=隔日 / 7=周更 / null=灵活）。决定 buffer 警戒颜色阈值 | hit-init | hit-status / hit-recommend / hit-shoot / hit-publish / SessionStart hook |
 | `rubric_form_mismatch` | bool | true 表示 content_form ≠ opinion-video 但仍用 opinion 内置 rubric 起步——提示用户 bump 时调权重 | hit-init | hit-status（持续提示） |
+| `discovery_strategy` | string enum | 选题主线：`trend-first`（热点为主）/ `question-first`（搜问题为主）/ `balanced`（默认）。**附加字段，缺省即 balanced**（老用户无此字段不报错，读取走 `.get("discovery_strategy","balanced")`，未 bump schema）。决定默认 `enabled_trend_sources` + 空池引导指向 | hit-init / 用户手动 | hit-trends / hit-recommend（空池引导分流） |
 | `benchmark_status` | enum | "none" / "imported" / "pending"（用户答应等下找）| hit-init / hit-learn-from | hit-seed（brainstorm 时读 benchmark.md）/ hit-status（pending 时持续提醒） |
 | `benchmark_name` | string / null | 对标账号名（如"蜗牛学长留学"）；none 时为 null | hit-learn-from | hit-status / hit-seed |
 | `benchmark_sample_count` | int | 已导入的对标视频条数 | hit-learn-from（写入 / append） | hit-status（N≥10 时提示 benchmark 影响淡出） |
@@ -317,6 +319,7 @@ def write_state(state):
 
 允许手改的字段：
 - `enabled_trend_sources`（数组，决定 hit-trends 用哪些源）
+- `discovery_strategy`（`trend-first` / `question-first` / `balanced`，决定默认源 + 空池引导指向；改了它不会自动重写 `enabled_trend_sources`，两者各自独立）
 - `data_collection`（切换 manual ↔ adapter）
 
 **不**建议手改的字段（会破坏不变量）：

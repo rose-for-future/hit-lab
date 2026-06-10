@@ -126,6 +126,17 @@ allowed-tools: Bash(*), Read, Write, Edit, Glob, WebFetch, Skill
 
 记录到 `target_publish_cadence_days`（1 / 2 / 7 / null）。
 
+**Q1.7: 选题主线**
+
+> "你主要靠什么找选题？
+> a) **热点为主**——追平台热门话题、新工具/新模型发布（吃流量窗口）
+> b) **搜问题为主**——挖真实用户的提问/痛点，你来给解决方案（最适合教程 / 工具号 / Builder）
+> c) **都要 / 还不确定**（默认）"
+
+记录到 `discovery_strategy`（a→`trend-first` / b→`question-first` / c→`balanced`）。
+
+> ⚠️ **两类源始终都在**——这个选择只设"默认源 + 推荐侧重"，不是开关。你随时能在 `/hit-trends — sources: ...` 里临时换，也能直接改 `.hit-state.json`。选 b 的人，候选池空时系统会提示你去"挖问题"而不是"抓热点"。
+
 **Q2: 你这个频道发过视频吗？**
 
 > "a) 没发过 — 我会帮你从兴趣 + 热点 brainstorm 5 个候选 + 写 5 份初稿
@@ -278,6 +289,7 @@ c) 不找 → state 标 `benchmark_status: none`，用通用 v0 起步
      "typical_duration_seconds": <Q1.5 派生：30/90/240/450/900>,
      "target_publish_cadence_days": <Q1.6 派生：1/2/7/null>,
      "rubric_form_mismatch": <Q1=a→false；其他→true>,
+     "discovery_strategy": "<Q1.7 派生：a→trend-first / b→question-first / c→balanced>",
      "benchmark_status": "<Phase 2.5 派生：a→\"imported\"/b→\"pending\"/c→\"none\">",
      "benchmark_name": <imported 则字符串名，否则 null>,
      "benchmark_sample_count": <imported 则数字，否则 0>,
@@ -287,7 +299,7 @@ c) 不找 → state 标 `benchmark_status: none`，用通用 v0 起步
      "pool_status": "<查 Q4 映射表，写 \"none\"/\"markdown\"/\"notion\">",
      "data_layer": "markdown",
      "hooks_installed": <查 Q5 映射表，写 bool true/false>,
-     "enabled_trend_sources": ["manual-paste"],
+     "enabled_trend_sources": <Q1.7 派生：question-first→["community-questions","manual-paste"]；trend-first / balanced / 缺省→["manual-paste"]（热点 adapter 如 aihot/trendradar 需各自配置，不默认开；community-questions 是零配置 WebSearch，故 question-first 可直接默认开）>,
      "enabled_perf_adapters": <Q2.1=a→[\"douyin-session\"]；b→[\"xhs-explore\"]；c→[\"youtube-data-api\"]；d→[\"bilibili-stat\"]；其他→[]>,
      "last_bump_at": null,
      "last_bump_self_audited": false,
@@ -426,7 +438,7 @@ import 完成后：
 跑一次假的 Edit 拦截测试：
 1. 创建临时文件 `predictions/_test_hook.md`，含 `## 预测\n[test]\n## 复盘\n`
 2. 尝试 Edit 这个文件的 `## 预测` 段
-3. 钩子应 exit 1 阻塞 → 报告"✅ immutability 钩子生效"
+3. 钩子应 exit 2 阻塞（Claude Code PreToolUse 契约：exit 2 才阻塞，exit 1 是非阻塞报错）→ 报告"✅ immutability 钩子生效"
 4. 删除测试文件
 5. SessionStart hook 验证：直接调一次 `bash .hit-hooks/session-start.sh` → 应输出报告（即使是空的也行）
 
@@ -453,6 +465,8 @@ hit-learn-from 完成后回到 init 的 Phase 5。
 
 ```
 ✅ 初始化完成（rubric: v0，calibration_samples: <N>，confidence: <emoji 等级>）
+   选题主线：<discovery_strategy：热点为主 / 搜问题为主 / 都要>
+   <如 question-first：你的默认源已含 community-questions——说"挖问题"就抓真实用户提问>
 
 下次你可以直接说这些：
 
@@ -508,6 +522,7 @@ hit-learn-from 完成后回到 init 的 Phase 5。
 | `typical_duration_seconds` | Phase 3 | Q1.5 派生 |
 | `target_publish_cadence_days` | Phase 3 | Q1.6 派生 |
 | `rubric_form_mismatch` | Phase 3 | Q1≠a → true |
+| `discovery_strategy` | Phase 3 | Q1.7 派生（a→trend-first / b→question-first / c→balanced） |
 | `benchmark_status` | Phase 3 / 2.5 | Q2.5 答案派生 |
 | `benchmark_name` | Phase 3 / 2.5 | Q2.5 用户提供 |
 | `benchmark_sample_count` | Phase 3 / 2.5 | hit-learn-from import 后回填 |

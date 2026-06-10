@@ -43,6 +43,7 @@ state=$(cat "$STATE_FILE")
 schema_version=$(echo "$state" | jq -r '.schema_version // "unknown"')
 rubric_version=$(echo "$state" | jq -r '.rubric_version // "v0"')
 calibration_samples=$(echo "$state" | jq -r '.calibration_samples // 0')
+discovery_strategy=$(echo "$state" | jq -r '.discovery_strategy // "balanced"')
 target_cadence=$(echo "$state" | jq -r '.target_publish_cadence_days // null')
 buffer_count=$(echo "$state" | jq -r '.shoots // [] | length')
 pending_retros_count=$(echo "$state" | jq -r '.pending_retros // [] | length')
@@ -166,7 +167,12 @@ if [[ -f "$candidates_file" ]]; then
     | sed 's:/: / :g')
 fi
 if [[ -z "$top_candidates" ]]; then
-  candidates_label="🎯 候选: (空——说 '抓热点' 或 '找选题')"
+  # 空池引导按 discovery_strategy 分流 —— question-first 用户看到的是"挖问题"而不是"抓热点"
+  if [[ "$discovery_strategy" == "question-first" ]]; then
+    candidates_label="🎯 候选: (空——说 '挖问题' 抓真实用户提问，或 '找选题')"
+  else
+    candidates_label="🎯 候选: (空——说 '抓热点' / '挖问题' 或 '找选题')"
+  fi
 else
   candidates_label="🎯 候选 top 3: ${top_candidates}"
 fi

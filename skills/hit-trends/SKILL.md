@@ -1,8 +1,8 @@
 ---
 name: hit-trends
-description: 从配置的热点源（HN / Reddit / YouTube trending / B 站热门 / 等）抓今天的热门话题，去重 + 粗打分 + 写入 candidates.md。**绝大部分人没有候选池——这是让"我没素材"问题在 onboarding 第二步就消失的钥匙**。触发词："抓热点"/"fetch trends"/"今天有什么可做的"/"trending now"/"找选题"。
+description: 从配置的源抓今天的选题原料（两类：**热点话题** via aihot/trendradar 等，或 **真实用户提问** via community-questions），去重 + 粗打分 + 写入 candidates.md。**绝大部分人没有候选池——这是让"我没素材"问题在 onboarding 第二步就消失的钥匙**。触发词："抓热点"/"fetch trends"/"今天有什么可做的"/"trending now"/"找选题"/"挖问题"（= 抓真实用户提问，等价于 sources: community-questions）。
 argument-hint: [— sources: <comma-separated>] [— max-per: 20]
-allowed-tools: Bash(*), Read, Write, Edit, Glob, WebFetch, Skill
+allowed-tools: Bash(*), Read, Write, Edit, Glob, WebSearch, WebFetch, Skill
 ---
 
 # /hit-trends — 热点抓取
@@ -57,26 +57,28 @@ allowed-tools: Bash(*), Read, Write, Edit, Glob, WebFetch, Skill
 ```python
 # 伪代码
 state = read('.hit-state.json')
+# 触发词"挖问题" → 等价于 sources: community-questions（搜真实用户提问）
+if user_said in ('挖问题',): args.sources = ['community-questions']
 enabled_adapters = args.sources or state.get('enabled_trend_sources', ['manual-paste'])
+strategy = state.get('discovery_strategy', 'balanced')  # 决定空池引导指向哪
 ```
 
-如 enabled_adapters 为空 → 输出引导：
+如 enabled_adapters 为空 → 输出引导（**按 discovery_strategy 分流**——这是 question-first 用户感知到"搜问题为主"的关键时刻）：
 
 ```
-你目前没有启用任何热点源。
+你目前没有启用任何源。可用 adapter 全在 adapters/trend-sources/。
 
-最快配法：
-- 临时跑：/hit-trends — sources: manual-paste,hackernews
+<如 strategy == question-first：>
+你的主线是"搜问题为主"。最快开始：
+- 说"挖问题" → 抓真实用户提问（community-questions，零配置，纯公开检索）
+- 或永久启用：把 "community-questions" 加进 .hit-state.json 的 enabled_trend_sources
+
+<否则（trend-first / balanced）：>
+最快开始：
+- 临时跑：/hit-trends — sources: manual-paste
+- 想抓 AI 行业热点 → 配 aihot / trendradar-mcp（见各自 adapter README）
+- 想搜真实用户提问 → 说"挖问题"（community-questions，零配置）
 - 永久启用：编辑 .hit-state.json 的 enabled_trend_sources 数组
-
-可用 adapter（详见 adapters/trend-sources/）：
-- manual-paste（默认，永远能用）
-- hackernews（HN Algolia API，无需 key）
-- reddit-rising（公开 .json 端点）
-- youtube-trending（需 YouTube Data API key）
-- bilibili-popular（公开端点，偶有变动）
-- xhs-explore / douyin-hot（fragile，需 cookie）
-- thirdparty-paid（新榜 / 飞瓜，需自己接 API）
 ```
 
 ### Phase 1-2: 对每个 adapter 调 fetch + normalize
@@ -85,6 +87,7 @@ enabled_adapters = args.sources or state.get('enabled_trend_sources', ['manual-p
 
 | Adapter | 实现机制 |
 |---|---|
+| `community-questions` | **搜真实用户提问**（V2EX/知乎/Reddit/HN）：WebSearch 找提问帖 + WebFetch 读痛点 → 把"问题"反转成"选题"。零登录态零账号风险。详见 [adapters/trend-sources/community-questions.md](../../adapters/trend-sources/community-questions.md) |
 | `manual-paste` | 询问用户："粘贴你今天的候选 URL/标题列表（每行一条）" → 解析每行，对 URL 做 WebFetch 拓展 snippet |
 | `hackernews` | WebFetch HN Algolia API：`https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage={N}` → 提取 title/url/snippet |
 | `reddit-rising` | WebFetch Reddit JSON：`https://www.reddit.com/r/<subreddit>/rising.json?limit={N}` |

@@ -74,7 +74,11 @@ allowed-tools: Read, Glob, Grep
    说："找选题" 或 "seed"
 
 2. 🔥 [日常补充] 用 /hit-trends 抓 20 条带打分的候选
-   说："抓热点" — 从 weibo-hot / zhihu-hot / b站热门 / HN / 你配的源各拉 N 条
+   <读 .hit-state.json 的 discovery_strategy 分流——这是 question-first 用户感知"搜问题为主"的关键时刻：>
+   <如 question-first：>
+   说："挖问题" — 抓真实用户提问（community-questions，零配置纯公开检索），你来给解决方案
+   <否则（trend-first / balanced）：>
+   说："抓热点" — 从你配的热点源（aihot / trendradar / ...）拉话题；或"挖问题"抓真实提问
    适合已经跑过 /hit-seed、想日常补充候选池的用户
 
 3. ✍️  手动建：把候选标题贴进 candidates.md，每行一条
